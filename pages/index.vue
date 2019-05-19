@@ -1,6 +1,8 @@
 <template>
 	<div class="container-fluid pt-2">
-		<Background />
+		<div class="row">
+			<Navigation />
+		</div>
 		<div class="row mx-2 py-2">
 			<Datetime />
 			<Weather />
@@ -8,28 +10,25 @@
 		<Forecast />
 
 		<div class="row py-2">
-			<Tfl />
 			<Calendar />
 		</div>
 	</div>
 </template>
 
 <script>
-import Background from '~/components/Background.vue'
 import Datetime from '~/components/Datetime.vue'
 import Weather from '~/components/Weather.vue'
 import Forecast from '~/components/Forecast.vue'
 import Calendar from '~/components/Calendar.vue'
-import Tfl from '~/components/Tfl.vue'
+import Navigation from '~/components/Navigation.vue'
 
 export default {
 	components: {
-		Background,
 		Datetime,
 		Weather,
 		Forecast,
 		Calendar,
-		Tfl
+		Navigation
 	}
 }
 </script>

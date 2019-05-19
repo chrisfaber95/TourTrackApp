@@ -7,5 +7,44 @@
   <body>
     <div id="app"></div>
     <script src="/dist/build.js"></script>
+	
+		<script>
+		const visitedPlaces = { template: '<div><p>Test</p><div class="map"><div id="ScribbleMap" style="width: 800px; height: 800px"></div></div></div>' }
+		const newDestination = { template: '<p>Test 1</p>'}
+		const listDestination = { template: '<p>Test 2</p>'}
+		const newRoute = { template : '<p>Test 3</p>'}
+		const listRoutes = { template : '<p>Test 4</p>'}
+		const profile = { template : '<div><p>Profile</p><router-link to="/profile/profileSettings">Profile Settings</router-link><router-view></router-view></div>'}
+		const UserProfile = { template : '<p>Profile Settings</p>'}
+	
+		const routes = [
+			{ path: '/visitedplaces', component: visitedPlaces },
+			{ path: '/newdestination', component: newDestination },
+			{ path: '/listdestination', component: listDestination },
+			{ path: '/newroute', component: newRoute },
+			{ path: '/listroute', component: listRoutes},
+			{ path: '/profile', component: profile,
+				children: [
+					{
+					  // UserProfile will be rendered inside User's <router-view>
+					  path: 'profileSettings',
+					  component: UserProfile
+					}
+				]
+			}
+		]
+		
+		
+		const router = new VueRouter({
+			routes
+		})
+		
+		const app = new Vue({
+			router
+		}).$mount('#app')
+		
+		</script>
+	
+	
   </body>
 </html>
