@@ -1,18 +1,14 @@
 {
-  "name": "infoboard",
+  "name": "TourTrackApp",
   "version": "1.7.2",
   "description": "Infoboard showing photos as the background, time, weather, calendar events and Transport for London updates",
-  "author": "SixBytesUnder <wojtek@sixbytesunder.com> (https://sixbytesunder.com)",
+  "author": "Chris Faber",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SixBytesUnder/infoboard"
+    "url": "https://github.com/chrisfaber95/TourTrackApp"
   },
   "keywords": [
-    "infoboard",
-    "raspberrypi",
-    "weather",
-    "TfL",
-    "photo frame"
+    "TourTrackApp"
   ],
   "license": "MIT",
   "scripts": {
