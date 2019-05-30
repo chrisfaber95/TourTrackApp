@@ -1,32 +1,28 @@
 <template>
 	<div class="col">
+		<Navigation />
+		<Datetime />
 		<h1>Visited Places</h1>
 		<ul>
 			<li v-for="item in visited" :key="item.id">
 				{{ item.value }} - {{ item.datum }} - {{ item.long }}, {{ item.lat }}
 			</li>
 		</ul>
-		<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-		<script>
-			var loadmap = function() {
-			var sm = new scribblemaps.ScribbleMap(document.getElementById('ScribbleMap'));
-			$.getJSON('/visited.json', function(json) {
-			for(visited in json['visited']){
-			sm.draw.point([json['visited'][visited]['long'], json['visited'][visited]['lat']], 5);
-			}
-			});
-			}
-		</script>
-		<script src="https://scribblemaps.com/api/js/?callback=loadmap" async />
-		<div class="map">
-			<div id="ScribbleMap" style="width: 800px; height: 800px" />
-		</div>
+		<Map />
 	</div>
 </template>
 
 <script>
+import Navigation from '~/components/Navigation.vue'
+import Datetime from '~/components/Datetime.vue'
+import Map from '~/components/Map.vue'
 
 export default {
+	components: {
+		Datetime,
+		Navigation,
+		Map
+	},
 	data: function () {
 		return {
 			visited: [
