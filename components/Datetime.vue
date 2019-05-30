@@ -1,15 +1,11 @@
 <template>
-	<div class="col">
-		<div>
-			<p class="row time display-1 px-2 withBackground">
-				{{ time }}
-			</p>
-		</div>
-		<div class="row mt-2">
-			<p class="h4 px-2 py-1 withBackground">
-				{{ date }}
-			</p>
-		</div>
+	<div>
+		<p class="time">
+			{{ time }}
+		</p>
+		<p class="date">
+			{{ date }}
+		</p>
 	</div>
 </template>
 
@@ -42,8 +38,16 @@ export default {
 <style scoped>
 @media (max-width: 575.98px) {
 	.time {
-		font-size: 4rem;
+		font-size: 2rem;
 		color: aqua;
 	}
+}
+.time {
+	font-size: 2rem;
+	display: inline-block;
+}
+.date {
+	font-size: 1.3rem;
+	display: inline-block;
 }
 </style>

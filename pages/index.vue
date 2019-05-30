@@ -1,36 +1,21 @@
 <template>
-	<div class="container-fluid pt-2">
-		<Header />
-		<div class="row">
-			<div class="col-2">
-				<Navigation />
-			</div>
-			<div class="col-10">
-				<Datetime />
-				<Weather />
-				<Calendar />
-				<Forecast />
-			</div>
-		</div>
+	<div>
+		<Weather />
+		<Calendar />
+		<Forecast />
 	</div>
 </template>
 
 <script>
-import Datetime from '~/components/Datetime.vue'
-import Header from '~/components/Header.vue'
 import Weather from '~/components/Weather.vue'
 import Forecast from '~/components/Forecast.vue'
 import Calendar from '~/components/Calendar.vue'
-import Navigation from '~/components/Navigation.vue'
 
 export default {
 	components: {
-		Header,
-		Datetime,
 		Weather,
 		Forecast,
-		Calendar,
-		Navigation
+		Calendar
 	}
 }
 </script>

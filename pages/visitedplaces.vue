@@ -1,26 +1,28 @@
 <template>
-	<div class="col">
-		<Navigation />
-		<Datetime />
-		<h1>Visited Places</h1>
-		<ul>
-			<li v-for="item in visited" :key="item.id">
-				{{ item.value }} - {{ item.datum }} - {{ item.long }}, {{ item.lat }}
-			</li>
-		</ul>
-		<Map />
+	<div>
+		<div class="container-fluid">
+			<h1>Visited Places</h1>
+		</div>
+		<div class="row">
+			<div class="col-6">
+				<ul>
+					<li v-for="item in visited" :key="item.id">
+						{{ item.value }} - {{ item.datum }} - {{ item.long }}, {{ item.lat }}
+					</li>
+				</ul>
+			</div>
+			<div class="col-6">
+				<Map />
+			</div>
+		</div>
 	</div>
 </template>
 
 <script>
-import Navigation from '~/components/Navigation.vue'
-import Datetime from '~/components/Datetime.vue'
 import Map from '~/components/Map.vue'
 
 export default {
 	components: {
-		Datetime,
-		Navigation,
 		Map
 	},
 	data: function () {
