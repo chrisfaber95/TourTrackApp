@@ -2,8 +2,12 @@
 	<div>
 		<b-button variant="danger" @click="logPosition">Log position</b-button>
 		<b-button variant="danger" @click="randomPoint">Add Random Marker</b-button>
+		<form>
+			<input type="text" value="" name="search"/>
+			<input type="submit" value="Submit">
+		</form>
 		<no-ssr placeholder="Loading...">
-			<l-map v-bind:"map" :zoom=3 :center="[53.2193835, 6.5665018]" class="mini-map">
+			<l-map :zoom=3 :center="[53.2193835, 6.5665018]" class="mini-map">
 				<l-tile-layer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
 				<l-marker v-for="item in markers" v-bind:key="item.id" :lat-lng="[item.lat, item.lng]" />
 				<v-geosearch :options="geosearchOptions" />
@@ -32,7 +36,6 @@ export default {
 	},
 	data: function () {
 		return {
-			map: new L.Map(),
 			position: [55.607741796855734, 13.018133640289308],
 			draggable: true,
 			popupContent: 'Sentian HQ',
@@ -63,7 +66,6 @@ export default {
 	},
 	methods: {
 		logPosition() {
-			console.log(this.L.Map)
 		},
 		randomPoint() {
 			this.markers.push({ id: this.markers.length + 1, lat: Math.floor(Math.random() * (50 - 0 + 1) + 0), lng: Math.floor(Math.random() * (100 - 0 + 1) + 0) })

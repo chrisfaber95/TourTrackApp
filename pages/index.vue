@@ -16,7 +16,8 @@ export default {
 		Weather,
 		Forecast,
 		Calendar
-	}
+	},
+	middleware: 'notAuthenticated'
 }
 </script>
 
