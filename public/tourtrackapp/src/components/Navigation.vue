@@ -21,6 +21,7 @@ export default {
 			{ id: 2, tag: "List Destination", slug: "/listdestination", image: "map-marker-alt"},
 			{ id: 3, tag: "List Trips", slug: "/listroute", image: "calendar"},
 			{ id: 4, tag: "Profile", slug: "/profile", image: "user"},
+			{ id: 5, tag: "Login", slug: "/login", image: "user"},
 		]
 		}
 	}

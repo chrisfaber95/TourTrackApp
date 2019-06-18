@@ -5,16 +5,46 @@
 </template>
 
 <script>
+import Axios from 'axios';
+const API_URL = 'http://localhost:3000';
 
 export default {
   name: 'Public',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      
     }
   },
   components:{
-  }
+  },
+  methods:{
+	getDestinations() {
+		const url = `${API_URL}/api/destinations`;
+		axios.get(url)
+        .then(function (response) {
+            console.log(response);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+	},
+	getUserData: function() {    
+		let self = this
+		const url = `${API_URL}/api/user`;
+		axios.get(url) 
+			.then((response) => {    
+				console.log(response)    
+				self.$set(this, "user", response.data.user)    
+			})    
+			.catch((errors) => {    
+				console.log(errors)    
+				router.push("/")    
+			})    
+	}    
+  },    
+	mounted() {    
+		this.getUserData()    
+	} 
 }
 </script>
 
