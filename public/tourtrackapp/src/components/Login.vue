@@ -1,42 +1,46 @@
 <template>
    <div>
         <h2>Login</h2>
-        <form v-on:submit="login">
-            <input type="text" name="email" /><br>
-            <input type="password" name="password" /><br>    
+        <form v-on:submit="submit">
+            <input type="text" name="email" v-model="credentials.username" /><br>
+            <input type="password" name="password" v-model="credentials.password" /><br>    
             <input type="submit" value="Login" />    
         </form>    
     </div>
 </template>
 
 <script>
-import router from "../router"        	
+import router from "../router"
+import auth from '../auth'    	
 import axios from "axios"    
 const API_URL = 'http://localhost:3000';
     export default {    
-        name: "Login",    
+        name: "Login",
+		data(){
+			return{
+			credentials: {
+				username: '',
+				password: ''
+			},
+			error: ''
+			}
+		},
+		component:{
+			auth
+		},
         methods: {    
-            login: (e) => {    
-                e.preventDefault()   
-                let email = "user@email.com"
-                let password = "password"
-                let login = () => {
-                    let data = {
-                        email: email,
-                        password: password
-                    }
-					const url = `${API_URL}/api/user`;
-					axios.get(url, data)
-                        .then((response) => {
-                            console.log("Logged in")
-                            router.push("/dashboard")
-                        })
-                        .catch((errors) => {
-                            console.log("Cannot login")
-                        })
-                }
-                login()
-            }
+            submit() {
+				this.credentials.username = "user@email.com"
+				this.credentials.password = "password"
+				var credentials = {
+				  username: this.credentials.username,
+				  password: this.credentials.password
+				}
+				// We need to pass the component's this context
+				// to properly make use of http in the auth service
+				auth.login(this, credentials, 'dashboard')
+			  
+			}
         }
     }
 </script>

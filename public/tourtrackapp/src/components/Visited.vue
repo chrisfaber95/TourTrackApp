@@ -6,6 +6,8 @@
 
 <script>
 import Map from '@/components/RoutePlanner.vue'
+import axios from 'axios'
+const API_URL = 'http://localhost:3000';
 export default {
 
 
@@ -17,7 +19,46 @@ export default {
   },
   components:{
 	Map
-  }
+  },
+  methods:{
+  getUserData: function() {    
+		let self = this
+		const url = `${API_URL}/api/user`;
+		axios.get(url) 
+			.then((response) => {    
+				console.log(response)    
+				self.$set(this, "user", response.data.user)    
+			})    
+			.catch((errors) => {    
+				console.log(errors)    
+				router.push("/")    
+			})    
+	},
+	getVisited: function() {
+		const url = `${API_URL}/api/getvisited`;
+		axios.get(url)
+			.then((response) => {
+				console.log(response)
+			})
+			.catch((errors) => {
+				console.log(errors)
+			})
+	},
+	addVisited: function(data) {
+	console.log(data);
+		const url = `${API_URL}/addvisited`;
+		axios.post(url, data)
+			.then((response) => {
+				console.log(response)
+			})
+			.catch((errors) => {
+				console.log(errors)
+			})
+	}
+  },    
+	mounted() {    
+	} 
+  
 }
 </script>
 

@@ -33,6 +33,7 @@ L.Icon.Default.mergeOptions({
    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

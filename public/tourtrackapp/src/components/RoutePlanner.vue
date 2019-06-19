@@ -3,6 +3,7 @@
 		<b-button variant="success" @click="logPosition">Log position</b-button>
 		<b-button variant="success" @click="randomPoint">Add Random Marker</b-button>
 		<b-button variant="success" @click="randomRoute">Add Random Route</b-button>
+		<b-button variant="success" @click="logRoute">log Current Route</b-button>
 		<b-button variant="success" @click="getGeoLocation">Get Current Location</b-button>
 		<form>
 			<input type="text" value="" name="search"/>
@@ -25,6 +26,8 @@ import 'leaflet-routing-machine'
 import JQuery from 'jquery'
 let $ = JQuery
 
+
+
 Vue.component('l-map', Vue2Leaflet.LMap)
 Vue.component('l-tile-layer', Vue2Leaflet.LTileLayer)
 Vue.component('l-marker', Vue2Leaflet.LMarker)
@@ -36,6 +39,7 @@ export default {
 			link: [
 				{ rel: 'stylesheet', href: 'https://unpkg.com/leaflet@1.5.1/dist/leaflet.css', integrity: 'sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==', crossorigin: '' },
 				{ rel: 'stylesheet', href: 'https://unpkg.com/leaflet-geosearch@2.6.0/assets/css/leaflet.css' },
+				{ rel: 'stylesheet', href: '/node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css' },
 				]
 		}
 	}, 
@@ -56,12 +60,13 @@ export default {
 		latlng: null,
 		lat: 0,
 		lon: 0,
-		map: null
+		map: null,
+		currentRoute: null
     }
   },
   mounted(){
 	this.geosearch()
-	console.log(this.$route)
+	console.log(this.$parent)
  },
  beforeMount(){
 	
@@ -73,12 +78,23 @@ export default {
 			this.markers.push({ id: this.markers.length + 1, lat: Math.floor(Math.random() * (50 - 0 + 1) + 0), lng: Math.floor(Math.random() * (100 - 0 + 1) + 0) })
 		},
 		randomRoute() {
+		var mapEdit = this.map;
+		const route = L.Routing.control({
+			waypoints: [
+				L.latLng(53.2193835, 6.5665018),
+				L.latLng(52.5167747, 6.0830219)
+			],
+			routeWhileDragging: true
+		}).addTo(mapEdit);
+		console.log(route);
+		this.currentRoute = route;
 		},
 		getGeoLocation(){
 		var mapEdit = this.map;
+		const parent = this.$parent
 			$.getJSON('http://ip-api.com/json', function (data, status) {
 			  if(status == "success") {
-				
+				console.log(data)
 				this.lat = data.lat
 				this.lon = data.lon
 				
@@ -90,17 +106,30 @@ export default {
 				
 				
 				this.map = mapEdit;
+				
+				const sendData = {
+					"name" : data.city,
+					"lat" : this.lat,
+					"lon" : this.lon,
+					"date" : new Date()
+				}
+				console.log(sendData);
+				console.log(parent);
+				parent.addVisited(sendData);
+				
 			  }
 			});
-			
 		},
 		geolocationFunction(position){
 			console.log(position)
 		},
+		logRoute(){
+			console.log(this.currentRoute)
+		},
 		geosearch() {
 			this.map = L.map('mini-map');
 			console.log(this);
-			this.map.setView([50,6], 13);
+			this.map.setView([52.7,6.3], 13);
 			L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 				maxZoom: 18,
@@ -114,7 +143,7 @@ export default {
 					icon: new L.Icon.Default(),
 					draggable: false,
 				  },
-				  popupFormat: ({ query, result }) => result.label,   // optional: function    - default returns result label
+				  popupFormat: ({ query, result }) =>  "q: ${query}<br /> x: ${result.x}, y: ${result.y}",    // optional: function    - default returns result label
 				  maxMarkers: 1,                                      // optional: number      - default 1
 				  retainZoomLevel: false,                             // optional: true|false  - default false
 				  animateZoom: true,                                  // optional: true|false  - default true
@@ -123,7 +152,7 @@ export default {
 				  keepResult: false        
 			}).addTo(this.map);
 			
-			var circle = L.circle([50,6], {
+			var circle = L.circle([52.7,6.3], {
 				color: 'red',
 				fillColor: '#f03',
 				fillOpacity: 0.5,

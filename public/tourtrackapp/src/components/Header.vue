@@ -5,7 +5,7 @@
 				<h1>TTA</h1>
 			</div>
 			<div class="col-2">
-				<a href="#" v-on:click="logout">Logout</a>   
+				<a href="#" v-if="user.authenticated" @click="logout()">Logout</a>   
 			</div>
 			<div class="col-8 datetime">
 				<Datetime />
@@ -16,6 +16,7 @@
 
 <script>
 import Datetime from '@/components/Datetime.vue'
+import auth from '../auth'
 const API_URL = 'http://localhost:3000';
 export default {
 	components: {
@@ -23,17 +24,15 @@ export default {
 	},
 	data: function () {
 		return {
-			msg: 'Test'
+			msg: 'Test',
+			user: auth.user
 		}
 	},
 	methods: {
 	logout: function (e) {
-		const url = `${API_URL}/api/logout`;
-		axios.get(url)
-		.then(() => {
+		auth.logout()
 		router.push("/")
-      })
-}
+      }
 	}
 }
 </script>

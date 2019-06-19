@@ -1,11 +1,10 @@
 <template>
   <div>
-  {{msg}}
   </div>
 </template>
 
 <script>
-import Axios from 'axios';
+import axios from 'axios';
 const API_URL = 'http://localhost:3000';
 
 export default {
@@ -31,7 +30,7 @@ export default {
 	getUserData: function() {    
 		let self = this
 		const url = `${API_URL}/api/user`;
-		axios.get(url) 
+		axios.post(url) 
 			.then((response) => {    
 				console.log(response)    
 				self.$set(this, "user", response.data.user)    
@@ -42,9 +41,15 @@ export default {
 			})    
 	}    
   },    
-	mounted() {    
-		this.getUserData()    
-	} 
+	mounted() {      
+	} ,
+    route: {
+      // Check the users auth status before
+      // allowing navigation to the route
+      canActivate() {
+        return auth.user.authenticated
+      }
+    }
 }
 </script>
 

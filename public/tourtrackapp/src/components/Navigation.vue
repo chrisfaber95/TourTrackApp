@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import auth from '../auth'
 export default {
 	data: function () {
 		return {
@@ -22,7 +23,8 @@ export default {
 			{ id: 3, tag: "List Trips", slug: "/listroute", image: "calendar"},
 			{ id: 4, tag: "Profile", slug: "/profile", image: "user"},
 			{ id: 5, tag: "Login", slug: "/login", image: "user"},
-		]
+			],
+			user: auth.user
 		}
 	}
 }

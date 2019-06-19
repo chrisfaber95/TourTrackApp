@@ -14,8 +14,12 @@ const  bcrypt  =  require('bcryptjs');
 
 const SECRET_KEY = "secretkey23456";
 
-const database = new Datastore('users.db');
-database.loadDatabase();
+const users = new Datastore('users.db');
+const visited = new Datastore('visited.db');
+const destinations = new Datastore('destinations.db');
+users.loadDatabase();
+visited.loadDatabase();
+destinations.loadDatabase();
 
 app.use(function (req, res, next) {
 
@@ -44,19 +48,17 @@ router.get('/', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
+	console.log(req.body);
    const  email  =  req.body.email;
     const  password  =  req.body.password;
-    findUserByEmail(email, (err, user)=>{
-        if (err) return  res.status(500).send('Server error!');
-        if (!user) return  res.status(404).send('User not found!');
-        const  result  =  bcrypt.compareSync(password, user.password);
-        if(!result) return  res.status(401).send('Password not valid!');
-
-        const  expiresIn  =  24  *  60  *  60;
-        const  accessToken  =  jwt.sign({ id:  user.id }, SECRET_KEY, {
-            expiresIn:  expiresIn
-        });
-        res.status(200).send({ "user":  user,email, "access_token":  accessToken, "expires_in":  expiresIn});
+	users.findOne({email: email }, function(err,doc){
+		if (err) return  res.status(500).send('Server error!');  
+		const  expiresIn  =  24  *  60  *  60;
+		const  accessToken  =  jwt.sign({ id:  doc.id }, SECRET_KEY, {
+			expiresIn:  expiresIn
+		});
+		res.status(200).send({ "user":  doc.email, "access_token":  accessToken, "expires_in":  expiresIn          
+		});
     });
 });
 
@@ -80,22 +82,56 @@ router.post('/register', (req, res) => {
     });
 });
 
+router.get('/firstUser', (req, res) => {
+	const  name  =  'Chris';
+    const  email  =  'user@email.com';
+    const  password  =  bcrypt.hashSync('password');
+    createUser([name, email, password], (err)=>{
+        if(err) return  res.status(500).send("Server error!");
+    });
+});
+
+
+router.get('/getvisited', (req, res) => {
+	visited.find({}, function (err, docs){
+		res.status(200).send({ 
+			"docs":  docs      
+		});
+	});
+});
+
+
+router.post('/addvisited', (req, res) => {
+	const doc = { 	name: req.body.name,
+				    lat: req.body.lat,
+				    lon: req.body.lon,
+				    date: req.body.date
+				   }
+
+	visited.insert(doc, function (err, newDoc) {   // Callback is optional
+		res.status(200).send({ 
+			newDoc 
+		});
+	});
+});
+
 
 const  findUserByEmail  = (email) => {
-    database.findOne({email: email }, function(err,doc){
-		return doc;
+    users.findOne({email: email }, function(err,doc){
+		const user = doc;
     });
+	return user;
 }
 
 const  createUser  = (user, cb) => {
    const newUser = {
-	   name: user.name,
-	   email: user.email,
-	   password: user.password,
+	   name: user[0],
+	   email: user[1],
+	   password: user[2],
 	   date: new Date()
    }
 
-	database.insert(doc, function (err, newDoc){
+	users.insert(newUser, function (err, newDoc){
 		console.log(newDoc);
 	});
 	return newDoc;
