@@ -49,10 +49,11 @@ router.get('/', (req, res) => {
 
 router.post('/login', (req, res) => {
 	console.log(req.body);
-   const  email  =  req.body.email;
+   const  email  =  req.body.username;
     const  password  =  req.body.password;
 	users.findOne({email: email }, function(err,doc){
 		if (err) return  res.status(500).send('Server error!');  
+		console.log(doc);
 		const  expiresIn  =  24  *  60  *  60;
 		const  accessToken  =  jwt.sign({ id:  doc.id }, SECRET_KEY, {
 			expiresIn:  expiresIn

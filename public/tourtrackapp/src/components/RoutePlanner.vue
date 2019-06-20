@@ -61,7 +61,8 @@ export default {
 		lat: 0,
 		lon: 0,
 		map: null,
-		currentRoute: null
+		currentRoute: null,
+		currentMarker: null
     }
   },
   mounted(){
@@ -143,7 +144,7 @@ export default {
 					icon: new L.Icon.Default(),
 					draggable: false,
 				  },
-				  popupFormat: ({ query, result }) =>  "q: ${query}<br /> x: ${result.x}, y: ${result.y}",    // optional: function    - default returns result label
+				  popupFormat: ({ query, result }) =>  this.addPopupText(result),    // optional: function    - default returns result label
 				  maxMarkers: 1,                                      // optional: number      - default 1
 				  retainZoomLevel: false,                             // optional: true|false  - default false
 				  animateZoom: true,                                  // optional: true|false  - default true
@@ -158,6 +159,15 @@ export default {
 				fillOpacity: 0.5,
 				radius: 500
 			}).addTo(this.map);
+		},
+		addPopupText(result){
+			console.log(result);
+			const markerText = result.label + ' <button v-on:click="logLocation">Voeg toe aan Visited</button> ';
+			this.currentMarker = L.latLng(result.y, result.x); 
+			return markerText;
+		},
+		logLocation(){
+			console.log(this.currentMarker);
 		}
 	}
 }
