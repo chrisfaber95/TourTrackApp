@@ -2,13 +2,7 @@
   <div>
 		<b-button variant="success" @click="logPosition">Log position</b-button>
 		<b-button variant="success" @click="randomPoint">Add Random Marker</b-button>
-		<b-button variant="success" @click="randomRoute">Add Random Route</b-button>
-		<b-button variant="success" @click="logRoute">log Current Route</b-button>
-		<b-button variant="success" @click="getGeoLocation">Get Current Location</b-button>
-		<form>
-			<input type="text" value="" name="search"/>
-			<input type="submit" value="Submit">
-		</form>
+		<b-button variant="success" @click="consoleRoute">console</b-button>
 		<!--<l-map ref="map" :zoom=3 :center="[53.2193835, 6.5665018]" class="mini-map">
 			<l-tile-layer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
 			<l-marker ref="markers" v-for="item in markers" v-bind:key="item.id" :lat-lng="[item.lat, item.lng]" />
@@ -20,6 +14,7 @@
 <script>
 import Vue from 'vue'
 import L from 'leaflet'
+import axios from 'axios'
 import * as Vue2Leaflet from 'vue2-leaflet'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-routing-machine'
@@ -62,33 +57,68 @@ export default {
 		lon: 0,
 		map: null,
 		currentRoute: null,
-		currentMarker: null
+		currentMarker: null,
+		mapdata: null,
+		route: null
     }
   },
   mounted(){
-	this.geosearch()
-	console.log(this.$parent)
+  	this.geosearch()
  },
- beforeMount(){
-	
+ created(){
  },
   methods: {
 		logPosition() {
 		},
+		getMapData(){
+			const parent = this.$parent;
+			parent.getMapData(this);
+		},
+		setMapData(data){
+			this.mapdata = data;
+			console.log(this.mapdata);
+			
+			switch(this.$route.path){
+				case "/visitedplaces":
+					for(const item in this.mapdata){
+						console.log(this.mapdata[item]);
+						if(this.mapdata[item].lat != undefined || this.mapdata[item].lon != undefined){
+							var customColor = new L.Icon({
+								  iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+								  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+								  iconSize: [25, 41],
+								  iconAnchor: [12, 41],
+								  popupAnchor: [1, -34],
+								  shadowSize: [41, 41]
+							});
+							if ( this.mapdata[item].visited == false){
+							  var customColor = new L.Icon({
+									  iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+									  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+									  iconSize: [25, 41],
+									  iconAnchor: [12, 41],
+									  popupAnchor: [1, -34],
+									  shadowSize: [41, 41]
+								});
+							}
+							var marker = new L.Marker([this.mapdata[item].lat, this.mapdata[item].lon], {icon: customColor});
+							marker.addTo(this.map);
+						}
+					}
+					break;
+				case "/listroute":
+					for(const item in this.mapdata){
+						console.log(this.mapdata[item]);
+						this.addRoute(this.mapdata[item].waypoints);
+						//marker.addTo(this.map);
+					}
+					break;
+				default:
+					break;
+			}
+		},
 		randomPoint() {
 			this.markers.push({ id: this.markers.length + 1, lat: Math.floor(Math.random() * (50 - 0 + 1) + 0), lng: Math.floor(Math.random() * (100 - 0 + 1) + 0) })
-		},
-		randomRoute() {
-		var mapEdit = this.map;
-		const route = L.Routing.control({
-			waypoints: [
-				L.latLng(53.2193835, 6.5665018),
-				L.latLng(52.5167747, 6.0830219)
-			],
-			routeWhileDragging: true
-		}).addTo(mapEdit);
-		console.log(route);
-		this.currentRoute = route;
 		},
 		getGeoLocation(){
 		var mapEdit = this.map;
@@ -124,13 +154,9 @@ export default {
 		geolocationFunction(position){
 			console.log(position)
 		},
-		logRoute(){
-			console.log(this.currentRoute)
-		},
 		geosearch() {
 			this.map = L.map('mini-map');
-			console.log(this);
-			this.map.setView([52.7,6.3], 13);
+			this.map.setView([52.7,6.3], 10);
 			L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 				maxZoom: 18,
@@ -144,7 +170,7 @@ export default {
 					icon: new L.Icon.Default(),
 					draggable: false,
 				  },
-				  popupFormat: ({ query, result }) =>  this.addPopupText(result),    // optional: function    - default returns result label
+				  popupFormat: ({ query, result }) =>  this.addMarker(result),    // optional: function    - default returns result label
 				  maxMarkers: 1,                                      // optional: number      - default 1
 				  retainZoomLevel: false,                             // optional: true|false  - default false
 				  animateZoom: true,                                  // optional: true|false  - default true
@@ -152,7 +178,6 @@ export default {
 				  searchLabel: 'Enter address',                       // optional: string      - default 'Enter address'
 				  keepResult: false        
 			}).addTo(this.map);
-			
 			var circle = L.circle([52.7,6.3], {
 				color: 'red',
 				fillColor: '#f03',
@@ -160,14 +185,102 @@ export default {
 				radius: 500
 			}).addTo(this.map);
 		},
-		addPopupText(result){
-			console.log(result);
-			const markerText = result.label + ' <button v-on:click="logLocation">Voeg toe aan Visited</button> ';
-			this.currentMarker = L.latLng(result.y, result.x); 
-			return markerText;
+		addMarker(result){ 
+			const parent = this.$parent;
+			const sendData = {
+					"name" : result.label,
+					"lat" : result.y,
+					"lon" : result.x,
+					"date" : new Date()
+				}
+			console.log(sendData);
+			parent.addVisitedMarker(sendData);
 		},
 		logLocation(){
 			console.log(this.currentMarker);
+		},
+		wait(){
+			if(this.mapdata != null){
+				for(let i = 0; i < this.mapData; ++i){
+				console.log(this.mapData);
+					var marker = new L.Marker([this.mapData[i].lat, this.mapData[i].lon]);
+				}
+			}
+			else{
+				setTimeout(this.wait, 500);
+			}
+		},
+		randomRoute() {
+			var mapEdit = this.map;
+			this.route = L.Routing.control({
+				waypoints: [
+					L.latLng(53.2193835, 6.5665018),
+					L.latLng(52.5167747, 6.0830219)
+				],
+				routeWhileDragging: false
+			}).addTo(mapEdit);
+			console.log(this.route);
+			this.currentRoute = this.route;
+		},
+		setupRoute(begin, end) {
+			var mapEdit = this.map;
+			this.route = L.Routing.control({
+				waypoints: [
+					L.latLng(begin.lat, begin.lon),
+					L.latLng(end.lat, end.lon)
+				],
+				routeWhileDragging: false
+			}).addTo(mapEdit);
+			console.log(this.route);
+			this.currentRoute = this.route;
+		},
+		addRoute(waypoints){
+		console.log(waypoints);
+			var mapEdit = this.map;
+			this.route = L.Routing.control({
+				waypoints: waypoints,
+				routeWhileDragging: false
+			}).addTo(mapEdit);
+			console.log(this.route);
+			this.currentRoute = this.route;
+		},
+		logRoute(){
+			var data = {
+				waypoints: [
+				],
+				date: new Date()
+			};
+			if(this.currentRoute._selectedRoute != null){
+				for(const item in this.currentRoute._selectedRoute.waypoints){
+				console.log(this.currentRoute._selectedRoute.waypoints[item]);
+					const point = {
+						lat: this.currentRoute._selectedRoute.waypoints[item].latLng.lat,
+						lng: this.currentRoute._selectedRoute.waypoints[item].latLng.lng
+					}
+					data.waypoints.push(point);
+				}
+			}
+			else{
+				if(this.currentRoute != null){
+					for(const item in this.currentRoute._router.options.waypoints){
+						console.log(this.currentRoute._router.options.waypoints[item]);
+						const point = {
+							lat: this.currentRoute._router.options.waypoints[item].lat,
+							lng: this.currentRoute._router.options.waypoints[item].lng
+						}
+						data.waypoints.push(point);
+					}
+				}
+				else{
+					alert("No Route added");
+				}
+			}
+			
+			const parent = this.$parent;
+			parent.addCurrentRoute(data);
+		},
+		consoleRoute(){
+			console.log(this.route);
 		}
 	}
 }
@@ -180,5 +293,14 @@ export default {
 	height: 600px !important;
 	max-width: 100%;
 	max-height: 600px !important;
+}
+
+.leaflet-routing-container {
+    display: none;
+}
+</style>
+<style>
+.leaflet-routing-container {
+    display: none;
 }
 </style>

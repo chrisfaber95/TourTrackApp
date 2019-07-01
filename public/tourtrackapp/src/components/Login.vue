@@ -10,7 +10,8 @@
 </template>
 
 <script>
-import router from "../router"  	
+import router from "../router"
+import auth from '../auth'
 import axios from "axios"    
 const API_URL = 'http://localhost:3000';
     export default {    
@@ -42,9 +43,10 @@ const API_URL = 'http://localhost:3000';
 				.then((response) => {
 					console.log(response);
 					console.log("Logged in");
-					 localStorage.setItem('id_token', response.data.id_token)
+					localStorage.setItem('id_token', response.data.id_token)
 					localStorage.setItem('access_token', response.data.access_token)
-					this.user.authenticated = true
+					auth.user.authenticated = true
+					this.$router.push("dashboard")
 				})
 				.catch((errors) => {
 					console.log(errors)

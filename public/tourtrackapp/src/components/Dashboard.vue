@@ -1,10 +1,12 @@
 <template>
   <div>
+	<h1>Welcome</h1>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import auth from '../auth'
 const API_URL = 'http://localhost:3000';
 
 export default {
@@ -47,7 +49,9 @@ export default {
       // Check the users auth status before
       // allowing navigation to the route
       canActivate() {
-        return auth.user.authenticated
+		console.log("test");
+		console.log(auth.user.authenticated);
+        return auth.user.authenticated 
       }
     }
 }

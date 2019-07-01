@@ -16,10 +16,12 @@ const SECRET_KEY = "secretkey23456";
 
 const users = new Datastore('users.db');
 const visited = new Datastore('visited.db');
+const trips = new Datastore('trips.db');
 const destinations = new Datastore('destinations.db');
 users.loadDatabase();
 visited.loadDatabase();
 destinations.loadDatabase();
+trips.loadDatabase();
 
 app.use(function (req, res, next) {
 
@@ -46,7 +48,23 @@ app.use(express.static('public'));
 router.get('/', (req, res) => {
     res.status(200).send('This is an authentication server');
 });
-
+/*
+router.post('/login', (req, res) => {
+	console.log(req.body);
+   const  email  =  req.body.username;
+    const  password  =  req.body.password;
+	users.findOne({email: email }, function(err,doc){
+		if (err) return  res.status(500).send('Server error!');  
+		console.log(doc);
+		const  expiresIn  =  24  *  60  *  60;
+		const  accessToken  =  jwt.sign({ id:  doc.id }, SECRET_KEY, {
+			expiresIn:  expiresIn
+		});
+		res.status(200).send({ "user":  doc.email, "access_token":  accessToken, "expires_in":  expiresIn          
+		});
+    });
+});
+*/
 router.post('/login', (req, res) => {
 	console.log(req.body);
    const  email  =  req.body.username;
@@ -93,8 +111,17 @@ router.get('/firstUser', (req, res) => {
 });
 
 
-router.get('/getvisited', (req, res) => {
+router.get('/api/getvisited/all', (req, res) => {
 	visited.find({}, function (err, docs){
+		console.log(docs);
+		res.status(200).send({ 
+			"docs":  docs      
+		});
+	});
+});
+
+router.get('/api/getvisited/id', (req, res) => {
+	visited.findOne({_id: req.body.id}, function (err, docs){
 		res.status(200).send({ 
 			"docs":  docs      
 		});
@@ -102,16 +129,45 @@ router.get('/getvisited', (req, res) => {
 });
 
 
-router.post('/addvisited', (req, res) => {
+router.post('/api/addvisited', (req, res) => {
 	const doc = { 	name: req.body.name,
 				    lat: req.body.lat,
 				    lon: req.body.lon,
-				    date: req.body.date
+				    date: req.body.date,
+					visited: req.body.visited
 				   }
-
+	console.log(doc);
 	visited.insert(doc, function (err, newDoc) {   // Callback is optional
 		res.status(200).send({ 
 			newDoc 
+		});
+	});
+});
+
+router.post('/api/addtrip', (req, res) => {
+	const doc = { 	waypoints: req.body.waypoints,
+				    date: req.body.date
+				   }
+	console.log(req.body)
+	trips.insert(doc, function (err, newDoc) {   // Callback is optional
+		res.status(200).send({ 
+			newDoc 
+		});
+	});
+});
+
+router.get('/api/gettrip/all', (req, res) => {
+	trips.find({}, function (err, docs){
+		res.status(200).send({ 
+			"docs":  docs      
+		});
+	});
+});
+
+router.get('/api/gettrip/id', (req, res) => {
+	trips.find({}, function (err, docs){
+		res.status(200).send({ 
+			"docs":  docs      
 		});
 	});
 });
