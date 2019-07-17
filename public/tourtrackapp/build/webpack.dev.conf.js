@@ -9,6 +9,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
+const SWPrecache = require('sw-precache')
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
@@ -56,7 +58,18 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       filename: 'index.html',
       template: 'index.html',
       inject: true
-    }),
+    })
+/*	new SWPrecacheWebpackPlugin({
+	  cacheId: 'tta',
+	  filepath: 'sw-config.js',
+	  staticFileGlobs: [
+		'index.html',
+		'manifest.json',
+		'dist/*.{js,css}'
+	  ],
+      minify: true,
+	  stripPrefix: '/'
+	}),
     // copy custom static assets
     new CopyWebpackPlugin([
       {
@@ -64,7 +77,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         to: config.dev.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ])*/
   ]
 })
 

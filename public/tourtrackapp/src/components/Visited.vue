@@ -1,14 +1,28 @@
 <template>
   <div>
-	<b-button variant="success" @click="getGeoLocation">Get Current Location</b-button>
+	<b-button variant="success" @click="getGeoLocation" v-if="user.authenticated">Get Current Location</b-button>
 	<Map ref='mapComp' />
-	<b-button id="addVisited-button" variant="success" @click="addVisited" style='display:hidden'>Add to Visited</b-button>
-	<b-button id="addVisited-button" variant="success" @click="addDestination" style='display:hidden'>Add to Destination</b-button>
+	<b-button v-if="user.authenticated" id="addVisited-button" variant="success" @click="addVisited" style='display:hidden'>Add to Visited</b-button>
+	<b-button v-if="user.authenticated" id="addVisited-button" variant="success" @click="addDestination" style='display:hidden'>Add to Destination</b-button>
+	<div class="visited-list">
+		<div class="row" v-for="item in currentVisited" v-bind:key="item.id">
+			<div class="col-6">
+				{{item.name}}
+			</div>
+			<div class="col-4">
+				{{item.visited}}
+			</div>
+			<div class="col-2">
+				<b-button  v-if="!item.visited || user.authenticated" @click="updateVisited(item)"></b-button>
+			</div>
+		</div>
+	</div>
   </div>
 </template>
 
 <script>
 import Map from '@/components/RoutePlanner.vue'
+import auth from '../auth'
 import axios from 'axios'
 const API_URL = 'http://localhost:3000';
 export default {
@@ -20,7 +34,8 @@ export default {
       msg: 'Welcome to Your Vue.js App',
 	  currentMarker: null,
 	  currentVisited: null,
-	  child: null
+	  child: null,
+	  user: auth.user
     }
   },
   components:{
@@ -55,6 +70,18 @@ export default {
 		.catch((errors) => {
 			console.log(errors)
 		})
+	},
+	updateVisited: function(item) {
+		console.log(item);
+		/*const url = `${API_URL}/api/getvisited/all`;
+		axios.put(url)
+		.then((response) => {
+			this.currentVisited = response.data.docs;
+			this.$children[0].getMapData();
+		})
+		.catch((errors) => {
+			console.log(errors)
+		})*/
 	},
 	getVisitedById: function(id) {
 		const url = `${API_URL}/api/getvisited/id`;
@@ -124,5 +151,12 @@ li {
 }
 a {
   color: #42b983;
+}
+
+.visited-list{
+	overflow-y: scroll;
+}
+.visited-list .row{
+	margin-bottom: 5px !important;
 }
 </style>

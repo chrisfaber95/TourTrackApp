@@ -290,9 +290,10 @@ export default {
 <style scoped>
 .mini-map {
 	width: 100%;
-	height: 600px !important;
+	height: 60% !important;
 	max-width: 100%;
-	max-height: 600px !important;
+	max-height: 60% !important;
+	min-height: 400px !important;
 }
 
 .leaflet-routing-container {

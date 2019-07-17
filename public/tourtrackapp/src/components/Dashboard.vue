@@ -29,28 +29,34 @@ export default {
             console.log(error);
         });
 	},
-	getUserData: function() {    
-		let self = this
-		const url = `${API_URL}/api/user`;
-		axios.post(url) 
-			.then((response) => {    
-				console.log(response)    
-				self.$set(this, "user", response.data.user)    
-			})    
-			.catch((errors) => {    
-				console.log(errors)    
-				router.push("/")    
-			})    
+	getUserData: function() {
+		if(auth.user.authenticated){
+			let self = this
+			const url = `${API_URL}/checkuser`;
+			axios.post(url, localStorage.getItem('myCat')) 
+				.then((response) => {    
+					console.log(response)    
+					//self.$set(this, "user", response.data.user)  
+					//var cat = localStorage.getItem('myCat');				
+				})    
+				.catch((errors) => {    
+					console.log(errors)    
+					auth.user.authenticated = false
+					router.push("/login")    
+				})
+		}
+		else{
+			router.push("/login")
+		}
 	}    
   },    
-	mounted() {      
+	mounted() {
+		getUserData()
 	} ,
     route: {
       // Check the users auth status before
       // allowing navigation to the route
       canActivate() {
-		console.log("test");
-		console.log(auth.user.authenticated);
         return auth.user.authenticated 
       }
     }

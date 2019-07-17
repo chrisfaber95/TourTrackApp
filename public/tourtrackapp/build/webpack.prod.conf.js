@@ -10,6 +10,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -111,6 +112,15 @@ const webpackConfig = merge(baseWebpackConfig, {
       children: true,
       minChunks: 3
     }),
+
+	new SWPrecacheWebpackPlugin({
+	  cacheId: 'my-pwa-vue-app',
+	  filename: 'service-worker-cache.js',
+	  staticFileGlobs: ['dist/**/*.{js,css}', '/'],
+	  minify: true,
+	  stripPrefix: 'dist/',
+	  dontCacheBustUrlsMatching: /\.\w{6}\./
+	}),
 
     // copy custom static assets
     new CopyWebpackPlugin([
